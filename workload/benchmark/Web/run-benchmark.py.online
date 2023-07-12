@@ -1,0 +1,48 @@
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+import time, os
+
+def wait_for_page_load(driver, url, timeout):
+    #print("Page loading for {}".format(url))
+    driver.set_page_load_timeout(timeout)
+    start = time.time()
+    try:
+        driver.get(url)
+        end = time.time()
+        if(timeout > end - start):
+            time.sleep(timeout - (end - start))
+        driver.close()
+        return end - start
+    except TimeoutException as e:
+        driver.close()
+        return timeout
+
+
+driver = webdriver.Chrome()
+driver.maximize_window()
+time.sleep(1)
+
+#curPath = os.path.dirname(os.path.abspath(__file__))
+#curPath = "file://" + curPath + "/site/"
+
+#backgroud tab
+driver.get("https://www.google.com/")
+time.sleep(1)
+
+#foreground tab 30 sites
+sites = ['https://en.wikipedia.org/wiki/Linux', 'https://youtube.com/', 'https://twitter.com/linux', 'https://www.facebook.com/linuxfanofficial/', 'https://amazon.com/', 'https://imdb.com/', 'https://merriam-webster.com/', 'https://apple.com/', 'https://dictionary.com/', 'https://www.instagram.com/explore/tags/linux/', 'https://en.wiktionary.org/wiki/Linux', 'https://www.tripadvisor.com/', 'https://www.fandom.com/', 'https://www.yahoo.com/', 'https://pinterest.com/', 'https://www.yelp.com/', 'https://www.cambridge.org/', 'https://www.craigslist.org/', 'https://weather.com/', 'https://www.britannica.com/', 'https://www.webmd.com/', 'https://bbc.com', 'https://roblox.com', 'https://linkedin.com/', 'https://www.cricbuzz.com/', 'https://live.com/', 'https://www.bestbuy.com/us', 'https://www.microsoft.com/en-us/', 'https://www.walmart.com/']
+#sites = ["Amazon.html", "Apple.html", "BBC.html", "Best Buy.html", "Britannica.html", "Cambridge.html", "craigslist.html", "Cricbuzz.html", "Dictionary.com.html", "Facebook.html", "Fandom.html", "IMDb.html", "Instagram.html", "LinkedIn.html", "Merriam-Webster.html", "Microsoft.html", "Outlook.html", "Pinterest.html", "Roblox.html", "Tripadvisor.html", "Twitter.html", "Walmart.html", "weather.com.html", "WebMD.html", "Wikipedia.html", "Wiktionary.html", "Yahoo.html", "Yelp.html", "YouTube.html"]
+
+response_time = 0
+
+for index in range(len(sites)):
+    driver.execute_script("window.open('');")
+    driver.switch_to.window(driver.window_handles[-1])
+    time.sleep(1)
+    response_time += wait_for_page_load(driver, sites[index], 10)
+    time.sleep(1)
+    driver.switch_to.window(driver.window_handles[-1])
+    time.sleep(1)
+
+print(response_time)
+driver.quit()
